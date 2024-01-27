@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SH BOARD</title>
+    <!-- 부트스트랩 링크 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+    <!-- 부트스트랩에서 제공하는 아이콘 사용을 위한 링크 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        .page-item:hover {
+            cursor: pointer; /* 마우스를 올렸을 때 커서 모양 변경 */
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <h1 th:onclick="|location.href='@{/boards}'|">게시물 목록</h1>
+    <div class="row justify-content-end">
+        <div class="col-auto">
+            <!-- 검색 아이콘과 입력 창 -->
+            <div class="input-group">
+                <!-- 드롭다운 메뉴 -->
+                <div class="input-group-prepend">
+                    <select class="form-select" id="searchOptions">
+                        <option value="title">제목</option>
+                        <option value="writer">작성자</option>
+                    </select>
+                </div>
+                <input id="searchInput" type="text" class="input-search" placeholder="검색어를 입력하세요" aria-label="Search" aria-describedby="search-icon">
+                <button class="btn btn-outline-secondary" type="button" id="search-icon">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" th:onclick="|location.href='@{/board-form}'|">글 작성</button>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회수</th>
+        </tr>
+        </thead>
+        <tbody class="board-items">
+        </tbody>
+    </table>
+
+    <ul class="pagination justify-content-center">
+
+    </ul>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script th:src="@{/js/boards.js}"></script>
+</body>
+</html>

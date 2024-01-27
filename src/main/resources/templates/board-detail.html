@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 상세 페이지</title>
+    <!-- 부트스트랩 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        /* CSS를 이용해 제목 크기 조절 */
+        .post-title {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* 버튼 위치 조정 */
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            margin-right: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="btn-container mt-5">
+    <a th:onclick="|location.href='@{/boards}'|" class="btn btn-primary">게시글 목록</a>
+</div>
+<div class="container mt-5 board-detail">
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script th:src="@{/js/board-detail.js}"></script>
+</body>
+</html>
