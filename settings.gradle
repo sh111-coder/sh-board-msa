@@ -1,1 +1,6 @@
 rootProject.name = 'shboard'
+include 'shboard-common'
+include 'member-service'
+include 'board-service'
+include 'discovery-server'
+
