@@ -1,11 +1,11 @@
 package com.example.memberservice;
 
-import com.example.common.H2TruncateUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
+@ContextConfiguration(classes = MemberTestConfiguration.class)
 class MemberServiceApplicationTests {
 
     @Test

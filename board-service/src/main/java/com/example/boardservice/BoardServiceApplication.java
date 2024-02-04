@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableDiscoveryClient
-@SpringBootApplication(scanBasePackages = {"com.example.boardservice", "com.example.memberservice", "com.example.shboardcommon"}, scanBasePackageClasses = {H2TruncateUtils.class, Member.class})
+@SpringBootApplication
 @EntityScan(basePackageClasses = {Member.class, Board.class, BaseEntity.class})
 @EnableJpaRepositories(basePackageClasses = {MemberRepository.class, BoardRepository.class})
 public class BoardServiceApplication {
