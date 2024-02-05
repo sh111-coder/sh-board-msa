@@ -15,6 +15,14 @@ spring:
           uri: lb://board-service
           predicates:
             - Path=/api/boards/**
+      default-filters:
+        - name : GlobalAuthFilter
+          args :
+            baseMessage: Spring Cloud Gateway Global Filter
+
+  session:
+    redis:
+      namespace: shboard:session
 
 eureka:
   instance:
