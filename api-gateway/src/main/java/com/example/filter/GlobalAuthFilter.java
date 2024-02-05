@@ -3,7 +3,6 @@ package com.example.filter;
 import java.util.Base64;
 import java.util.List;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -38,9 +37,7 @@ public class GlobalAuthFilter extends AbstractGatewayFilterFactory<GlobalAuthFil
         this.redisTemplate = redisTemplate;
     }
 
-    @Data
     public static class Config {
-        private String baseMessage;
     }
 
     @Override
