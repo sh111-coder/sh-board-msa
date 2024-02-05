@@ -3,4 +3,5 @@ include 'shboard-common'
 include 'member-service'
 include 'board-service'
 include 'discovery-server'
+include 'api-gateway'
 
