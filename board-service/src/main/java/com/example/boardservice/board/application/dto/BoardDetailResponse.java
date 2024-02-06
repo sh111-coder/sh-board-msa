@@ -17,7 +17,7 @@ public record BoardDetailResponse(
         final Long id = board.getId();
         final String title = board.getTitle();
         final String content = board.getContent();
-        final String writerNickname = board.getWriter().getNickname().getNickname();
+        final String writerNickname = board.getWriterNickname();
         final LocalDateTime createdAt = board.getCreatedAt();
         final Long viewCount = board.getViewCount();
 

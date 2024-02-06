@@ -45,6 +45,6 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository {
     }
 
     private BooleanExpression writerEq(final String writer) {
-        return hasText(writer) ? board.writer.nickname.nickname.eq(writer) : null;
+        return hasText(writer) ? board.memberInfo.nickname.eq(writer) : null;
     }
 }

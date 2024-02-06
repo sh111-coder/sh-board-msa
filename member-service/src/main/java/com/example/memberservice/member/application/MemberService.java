@@ -1,5 +1,6 @@
 package com.example.memberservice.member.application;
 
+import com.example.memberservice.member.application.dto.MemberFeignResponse;
 import com.example.memberservice.member.application.dto.MemberLoginRequest;
 import com.example.memberservice.member.application.dto.MemberRegisterRequest;
 import com.example.memberservice.member.domain.Member;
@@ -36,5 +37,12 @@ public class MemberService {
                 .orElseThrow(MemberException.FailLoginException::new);
         log.info("Member Login Success! member LoginId = {}", member.getLoginId());
         return member.getLoginId().getLoginId();
+    }
+
+    public MemberFeignResponse findMemberByLoginId(final String loginId) {
+        final Member findMember = memberRepository.findByLoginId(loginId)
+                .orElseThrow(MemberException.NotFoundMemberException::new);
+
+        return new MemberFeignResponse(findMember.getId(), findMember.getNickname().getNickname());
     }
 }

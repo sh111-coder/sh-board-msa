@@ -41,8 +41,8 @@ public class BoardApiController {
 
     @GetMapping("/search")
     private ResponseEntity<BoardsResponse> searchByCondition(
-            @RequestParam(required = false) final String title,
-            @RequestParam(required = false) final String writer,
+            @RequestParam(value = "title", required = false) final String title,
+            @RequestParam(value = "writer", required = false) final String writer,
             final Pageable pageable
     ) {
         final BoardsResponse boardsResponse = boardService.searchByCondition(title, writer, pageable);

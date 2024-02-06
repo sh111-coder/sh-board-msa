@@ -5,11 +5,12 @@ import com.example.boardservice.board.application.dto.BoardWriteRequest;
 import com.example.boardservice.board.application.dto.BoardsResponse;
 import com.example.boardservice.board.domain.Board;
 import com.example.boardservice.board.domain.BoardRepository;
+import com.example.boardservice.board.domain.MemberInfo;
+import com.example.boardservice.board.domain.MemberInfoRepository;
 import com.example.boardservice.board.domain.dto.BoardSearchCondition;
 import com.example.boardservice.board.exception.BoardException;
-import com.example.memberservice.member.domain.Member;
-import com.example.memberservice.member.domain.MemberRepository;
-import com.example.memberservice.member.exception.MemberException;
+import com.example.boardservice.board.feign.MemberFeignClient;
+import com.example.boardservice.board.feign.MemberFeignResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
+// TODO : 멤버 정보(닉네임) 업데이트 시 정보 동기화 처리하기
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final MemberRepository memberRepository;
+    private final MemberInfoRepository memberInfoRepository;
+    private final MemberFeignClient memberFeignClient;
 
     @Transactional(readOnly = true)
     public BoardsResponse readByPage(final Pageable pageable) {
@@ -47,9 +50,10 @@ public class BoardService {
     }
 
     public Long writeBoard(final String loginId, final BoardWriteRequest request) {
-        final Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(MemberException.NotFoundMemberException::new);
-        final Board board = new Board(member, request.title(), request.content());
+        final MemberFeignResponse response = memberFeignClient.findMemberIdByLoginId(loginId);
+        final MemberInfo memberInfo = new MemberInfo(response.nickname());
+        final MemberInfo savedMemberInfo = memberInfoRepository.save(memberInfo);
+        final Board board = new Board(savedMemberInfo, request.title(), request.content());
         final Board savedBoard = boardRepository.save(board);
         return savedBoard.getId();
     }

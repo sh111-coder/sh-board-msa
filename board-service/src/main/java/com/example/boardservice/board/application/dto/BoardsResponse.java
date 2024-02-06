@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 
 public record BoardsResponse(List<BoardListResponse> boardListResponses, BoardPageResponse boardPageResponse) {
 
-    private static final int EMPTY_PAGE_SIZE = 0;
     private static final int EMPTY_PAGE_NUMBER = 0;
 
     public static BoardsResponse of(final Page<Board> boardPage, final Pageable pageable) {

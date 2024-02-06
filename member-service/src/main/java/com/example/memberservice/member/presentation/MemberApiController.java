@@ -3,21 +3,21 @@ package com.example.memberservice.member.presentation;
 import java.net.URI;
 
 import com.example.memberservice.member.application.MemberService;
+import com.example.memberservice.member.application.dto.MemberFeignResponse;
 import com.example.memberservice.member.application.dto.MemberLoginRequest;
 import com.example.memberservice.member.application.dto.MemberRegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
+@Slf4j
 public class MemberApiController {
 
     private final MemberService memberService;
@@ -38,5 +38,10 @@ public class MemberApiController {
         session.setMaxInactiveInterval(3600);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    public MemberFeignResponse findMemberIdByLoginId(@RequestParam("loginId") final String loginId) {
+        return memberService.findMemberByLoginId(loginId);
     }
 }

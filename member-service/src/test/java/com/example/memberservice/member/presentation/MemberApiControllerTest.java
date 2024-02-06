@@ -21,13 +21,13 @@ import org.springframework.http.MediaType;
 
 class MemberApiControllerTest extends AcceptanceTest {
 
+    private static final String loginId = "sh111";
+    private static final String password = "password1!";
+    private static final String nickname = "seongha";
+
     @Nested
     @DisplayName("회원 가입 시")
     class Register {
-
-        final String loginId = "sh111";
-        final String password = "password1!";
-        final String nickname = "seongha";
 
         @Test
         @DisplayName("회원 가입에 성공한다.")
@@ -98,10 +98,6 @@ class MemberApiControllerTest extends AcceptanceTest {
     @DisplayName("로그인 시")
     class Login {
 
-        final String loginId = "sh111";
-        final String password = "password1!";
-        final String nickname = "seongha";
-
         @BeforeEach
         void setUp() {
             final MemberRegisterRequest request = new MemberRegisterRequest(loginId, password, nickname);
@@ -155,12 +151,57 @@ class MemberApiControllerTest extends AcceptanceTest {
         }
     }
 
+    @Nested
+    @DisplayName("회원 로그인 ID로 FeignMemberDto를 찾을 때")
+    class findMemberByLoginId {
+
+        @Test
+        @DisplayName("조회에 성공한다.")
+        void success() {
+            // given
+            final MemberRegisterRequest registerRequest = new MemberRegisterRequest(loginId, password, nickname);
+            registerRequest(registerRequest);
+
+            // when
+            final ExtractableResponse<Response> response = findMemberRequest(loginId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                softly.assertThat(response.body().jsonPath().getString("memberId")).isNotNull();
+                softly.assertThat(response.body().jsonPath().getString("nickname")).isEqualTo(nickname);
+            });
+        }
+
+        @Test
+        @DisplayName("없는 login Id로 요청하면 실패한다.")
+        void throws_when_not_exist_login_id() {
+            // when
+            final ExtractableResponse<Response> response = findMemberRequest(loginId);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                softly.assertThat(response.body().asString()).contains("해당 멤버의 ID가 존재하지 않습니다.");
+            });
+        }
+    }
+
     private ExtractableResponse<Response> registerRequest(final MemberRegisterRequest request) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .when().log().all()
                 .post("/api/members/register")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> findMemberRequest(final String loginId) {
+        return RestAssured.given().log().all()
+                .param("loginId", loginId)
+                .when().log().all()
+                .get("/api/members")
                 .then().log().all()
                 .extract();
     }

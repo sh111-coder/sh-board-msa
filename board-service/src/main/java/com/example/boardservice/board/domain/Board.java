@@ -1,6 +1,5 @@
 package com.example.boardservice.board.domain;
 
-import com.example.memberservice.member.domain.Member;
 import com.example.shboardcommon.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -17,7 +16,7 @@ public class Board extends BaseEntity {
 
     @ManyToOne
     @JoinColumn
-    private Member writer;
+    private MemberInfo memberInfo;
 
     private String title;
 
@@ -25,15 +24,15 @@ public class Board extends BaseEntity {
 
     private Long viewCount;
 
-    public Board(final Member writer, final String title,
+    public Board(final MemberInfo memberInfo, final String title,
                  final String content) {
-        this.writer = writer;
+        this.memberInfo = memberInfo;
         this.title = title;
         this.content = content;
         this.viewCount = 1L;
     }
 
     public String getWriterNickname() {
-        return writer.getNickname().getNickname();
+        return memberInfo.getNickname();
     }
 }

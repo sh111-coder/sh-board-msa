@@ -39,7 +39,6 @@ subprojects {
 project(':board-service') {
     dependencies {
         implementation project(':shboard-common')
-        implementation project(':member-service')
         implementation(testFixtures(project(":shboard-common")))
     }
 }
