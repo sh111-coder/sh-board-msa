@@ -50,7 +50,9 @@ MSA로 전환하면서 전반적인 Spring Cloud 환경을 구성하여 Spring C
 ## 🌈️상세 코드 설명 - 블로그 참고
 기존의 모놀리식 구조의 애플리케이션을 MSA로 전환하는 과정들을 챕터별로 블로그에 기록했습니다.
 <br>
-Spring Cloud 환경의 MSA 구조가 궁금하신 분들이나 구현 코드가 궁금하신 분들은 아래의 블로그 링크를 참고해주시면 좋을 것 같습니다 😃
+Spring Cloud 환경의 MSA 구조가 궁금하신 분들이나 구현 코드가 궁금하신 분들은 
+<br>
+아래의 블로그 링크를 참고해주시면 좋을 것 같습니다 😃
 <br>
 
 [[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (1) MSA란?](https://ksh-coding.tistory.com/135)
