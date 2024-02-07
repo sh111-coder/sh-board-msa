@@ -26,7 +26,7 @@ MSA로 전환하면서 전반적인 Spring Cloud 환경을 구성하여 Spring C
 1. Spring Boot 3.2.2
 2. JAVA 17
 3. Spring Data JPA
-3. Querydsl
+4. Querydsl
 
 * Bulid
 1. Gradle
