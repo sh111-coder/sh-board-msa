@@ -66,7 +66,7 @@ Spring Cloud 환경의 MSA 구조가 궁금하신 분들이나 구현 코드가 
 
 [[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (4) API Gateway 구현(feat. Spring Cloud Gateway)](https://ksh-coding.tistory.com/138)
 
-[[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (5) 서비스 간 통신 Spring Cloud OpenFeign 사용하기](https://ksh-coding.tistory.com/139)
+[[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (5) 서비스 간 통신하기(feat.Spring Cloud OpenFeign)](https://ksh-coding.tistory.com/139)
 
 [[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (6) 각 서비스의 설정 파일 관리하기(feat. Spring Cloud Config)](https://ksh-coding.tistory.com/141)
 
