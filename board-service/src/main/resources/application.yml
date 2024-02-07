@@ -1,60 +1,10 @@
 server:
-  servlet:
-    session:
-      cookie:
-        name: JSESSIONID
-
   port: 8021
 
 spring:
-  profiles:
-    active: local
-
   application:
     name: board-service
-
-  datasource:
-    url: jdbc:h2:mem:shboard-test;MODE=Mysql
-
-  h2:
-    console:
-      enabled: true
-
-  session:
-    store-type: redis
-    redis:
-      namespace: shboard:session
-
-
-  data:
-    redis:
-      host: localhost
-      password: 1234
-      port: 6379
-    web:
-      pageable:
-        default-page-size: 3
-
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        format_sql: true
-    show-sql: true
-
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+  profiles:
+    active: local
+  config:
+    import: optional:configserver:http://localhost:8888
