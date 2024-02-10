@@ -70,4 +70,4 @@ Spring Cloud 환경의 MSA 구조가 궁금하신 분들이나 구현 코드가 
 
 [[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (6) 각 서비스의 설정 파일 관리하기(feat. Spring Cloud Config)](https://ksh-coding.tistory.com/141)
 
-
+[[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (7) 서비스 장애 대응 Circuit Breaker 구현(feat. Resilience4J)](https://ksh-coding.tistory.com/142)
