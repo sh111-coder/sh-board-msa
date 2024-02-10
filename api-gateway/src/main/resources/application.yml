@@ -8,8 +8,3 @@ spring:
     active: local
   config:
     import: optional:configserver:http://localhost:8888
-
-
-#  session:
-#    redis:
-#      namespace: shboard:session
