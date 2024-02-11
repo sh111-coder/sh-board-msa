@@ -55,6 +55,8 @@ public class BoardService {
         final MemberInfo savedMemberInfo = memberInfoRepository.save(memberInfo);
         final Board board = new Board(savedMemberInfo, request.title(), request.content());
         final Board savedBoard = boardRepository.save(board);
+
+        memberFeignClient.writeBoard(loginId);
         return savedBoard.getId();
     }
 }

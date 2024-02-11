@@ -45,4 +45,10 @@ public class MemberService {
 
         return new MemberFeignResponse(findMember.getId(), findMember.getNickname().getNickname());
     }
+
+    public void writeBoard(final String loginId) {
+        final Member findMember = memberRepository.findByLoginId(loginId)
+                .orElseThrow(MemberException.NotFoundMemberException::new);
+        findMember.writeBoard();
+    }
 }

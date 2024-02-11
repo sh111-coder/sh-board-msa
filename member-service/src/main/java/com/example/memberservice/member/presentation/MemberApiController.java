@@ -44,4 +44,9 @@ public class MemberApiController {
     public MemberFeignResponse findMemberIdByLoginId(@RequestParam("loginId") final String loginId) {
         return memberService.findMemberByLoginId(loginId);
     }
+
+    @PostMapping("/write-board")
+    public void writeBoard(@RequestParam("loginId") final String loginId) {
+        memberService.writeBoard(loginId);
+    }
 }

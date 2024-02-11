@@ -11,4 +11,9 @@ public class MemberFeignFallback implements MemberFeignClient {
     public MemberFeignResponse findMemberIdByLoginId(final String loginId) {
         return new MemberFeignResponse(-1L, "익명");
     }
+
+    @Override
+    public void writeBoard(final String loginId) {
+        throw new RuntimeException("OpenFeign Member - Write Board call fail");
+    }
 }

@@ -28,10 +28,17 @@ public class Member extends BaseEntity {
     @Embedded
     private Nickname nickname;
 
+    private Long writePoint;
+
     @Builder
     private Member(final String loginId, final String password, final String nickname) {
         this.loginId = new LoginId(loginId);
         this.password = new Password(password);
         this.nickname = new Nickname(nickname);
+        this.writePoint = 0L;
+    }
+
+    public void writeBoard() {
+        this.writePoint += 500L;
     }
 }
