@@ -11,6 +11,8 @@ import com.example.boardservice.board.domain.dto.BoardSearchCondition;
 import com.example.boardservice.board.exception.BoardException;
 import com.example.boardservice.board.feign.MemberFeignClient;
 import com.example.boardservice.board.feign.MemberFeignResponse;
+import com.example.boardservice.board.kafka.BoardKafkaProducer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberInfoRepository memberInfoRepository;
     private final MemberFeignClient memberFeignClient;
+    private final BoardKafkaProducer boardKafkaProducer;
 
     @Transactional(readOnly = true)
     public BoardsResponse readByPage(final Pageable pageable) {
@@ -49,14 +52,15 @@ public class BoardService {
         return BoardsResponse.of(searchBoards, pageable);
     }
 
-    public Long writeBoard(final String loginId, final BoardWriteRequest request) {
+    public Long writeBoard(final String loginId, final BoardWriteRequest request) throws JsonProcessingException {
         final MemberFeignResponse response = memberFeignClient.findMemberIdByLoginId(loginId);
         final MemberInfo memberInfo = new MemberInfo(response.nickname());
         final MemberInfo savedMemberInfo = memberInfoRepository.save(memberInfo);
         final Board board = new Board(savedMemberInfo, request.title(), request.content());
         final Board savedBoard = boardRepository.save(board);
+        final Long createdBoardId = savedBoard.getId();
 
-        memberFeignClient.writeBoard(loginId);
-        return savedBoard.getId();
+        boardKafkaProducer.writeBoard(createdBoardId, loginId);
+        return createdBoardId;
     }
 }

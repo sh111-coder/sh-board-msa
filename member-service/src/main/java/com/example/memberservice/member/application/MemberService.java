@@ -6,6 +6,7 @@ import com.example.memberservice.member.application.dto.MemberRegisterRequest;
 import com.example.memberservice.member.domain.Member;
 import com.example.memberservice.member.domain.MemberRepository;
 import com.example.memberservice.member.exception.MemberException;
+import com.example.memberservice.member.kafka.dto.WriteBoardMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,9 +47,9 @@ public class MemberService {
         return new MemberFeignResponse(findMember.getId(), findMember.getNickname().getNickname());
     }
 
-    public void writeBoard(final String loginId) {
-        final Member findMember = memberRepository.findByLoginId(loginId)
+    public void rewardWritePoint(final WriteBoardMessage message) {
+        final Member findMember = memberRepository.findByLoginId(message.loginId())
                 .orElseThrow(MemberException.NotFoundMemberException::new);
-        findMember.writeBoard();
+        findMember.rewardWritePoint();
     }
 }

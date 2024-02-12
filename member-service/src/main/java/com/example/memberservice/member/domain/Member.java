@@ -38,7 +38,7 @@ public class Member extends BaseEntity {
         this.writePoint = 0L;
     }
 
-    public void writeBoard() {
+    public void rewardWritePoint() {
         this.writePoint += 500L;
     }
 }

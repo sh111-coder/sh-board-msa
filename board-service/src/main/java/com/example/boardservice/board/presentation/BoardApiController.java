@@ -8,6 +8,7 @@ import com.example.boardservice.board.application.dto.BoardWriteRequest;
 import com.example.boardservice.board.application.dto.BoardsResponse;
 import com.example.shboardcommon.global.auth.AuthMember;
 import com.example.shboardcommon.global.auth.AuthMemberId;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class BoardApiController {
     private final BoardService boardService;
 
     @PostMapping
-    private ResponseEntity<Void> write(@AuthMember final AuthMemberId authMemberId, final @RequestBody BoardWriteRequest request) {
+    private ResponseEntity<Void> write(@AuthMember final AuthMemberId authMemberId, final @RequestBody BoardWriteRequest request) throws JsonProcessingException {
         final Long savedBoardId = boardService.writeBoard(authMemberId.id(), request);
         return ResponseEntity.created(URI.create("/boards/" + savedBoardId)).build();
     }
