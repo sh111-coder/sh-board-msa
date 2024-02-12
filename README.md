@@ -38,6 +38,9 @@ MSA로 전환하면서 전반적인 Spring Cloud 환경을 구성하여 Spring C
 2. MySQL
 3. Redis
 
+*Message Queue
+1. Kafka
+
 * MSA 환경
 1. Spring Cloud Nexflix Eureka
 2. Spring Cloud Gateway
