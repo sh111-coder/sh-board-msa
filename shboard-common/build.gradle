@@ -21,6 +21,7 @@ dependencies {
     testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
     testFixturesImplementation 'io.rest-assured:rest-assured:5.3.2'
     testFixturesImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testFixturesImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
 
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
