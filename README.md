@@ -76,3 +76,5 @@ Spring Cloud 환경의 MSA 구조가 궁금하신 분들이나 구현 코드가 
 [[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (7) 서비스 장애 대응 Circuit Breaker 구현(feat. Resilience4J)](https://ksh-coding.tistory.com/142)
 
 [[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (8) 분산 트랜잭션 환경에서 트랜잭션 처리하기(feat. 2PC, Saga 패턴, Choreographed Saga)](https://ksh-coding.tistory.com/143)
+
+[[MSA] 개인 프로젝트 Monolithic to MSA 전환기 - (9) OpenFeign 테스트 하기 (feat. Spring Cloud Contract WireMock Test)](https://ksh-coding.tistory.com/144)
