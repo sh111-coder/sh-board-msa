@@ -1,9 +1,14 @@
 package com.example.boardservice.board.presentation;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 import com.example.boardservice.board.application.dto.BoardListResponse;
 import com.example.boardservice.board.application.dto.BoardPageResponse;
@@ -11,32 +16,43 @@ import com.example.boardservice.board.application.dto.BoardWriteRequest;
 import com.example.boardservice.board.application.dto.BoardsResponse;
 import com.example.boardservice.board.domain.Board;
 import com.example.boardservice.board.domain.BoardRepository;
+import com.example.boardservice.board.domain.MemberInfo;
+import com.example.boardservice.board.domain.MemberInfoRepository;
 import com.example.common.AcceptanceTest;
-import com.example.memberservice.member.application.dto.MemberLoginRequest;
-import com.example.memberservice.member.application.dto.MemberRegisterRequest;
-import com.example.memberservice.member.domain.Member;
-import com.example.memberservice.member.domain.MemberRepository;
+import com.example.shboardcommon.global.auth.AuthException;
+import com.example.shboardcommon.global.auth.AuthMemberArgumentResolver;
+import com.example.shboardcommon.global.auth.AuthMemberId;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 class BoardApiControllerTest extends AcceptanceTest {
 
-    @Autowired
-    private MemberRepository memberRepository;
+    private static final String LOGIN_ID = "sh111";
+    private static final String NICKNAME = "성하";
 
     @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private MemberInfoRepository memberInfoRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private AuthMemberArgumentResolver authMemberArgumentResolver;
 
     private String sessionId;
 
@@ -44,22 +60,12 @@ class BoardApiControllerTest extends AcceptanceTest {
     @DisplayName("게시글 작성 시")
     class WriteBoard {
 
-        private final String loginId = "sh111";
-        private final String password = "password1!";
-        private final String nickname = "성하";
-
-        @BeforeEach
-        void setUp() {
-            registerRequest(new MemberRegisterRequest(loginId, password, nickname));
-            final ExtractableResponse<Response> response =
-                    loginRequest(new MemberLoginRequest(loginId, password));
-            sessionId = response.cookie("JSESSIONID");
-        }
-
         @Test
         @DisplayName("쿠키에 세션이 존재하지 않으면 작성에 실패한다.")
-        void fail_not_exist_session_in_cookie() {
+        void fail_not_exist_session_in_cookie() throws Exception {
             // given
+            mockArgumentResolverFail();
+
             final String title = "title1";
             final String content = "content1";
             final BoardWriteRequest request = new BoardWriteRequest(title, content);
@@ -76,8 +82,10 @@ class BoardApiControllerTest extends AcceptanceTest {
 
         @Test
         @DisplayName("쿠키에 해당하는 세션이 존재하지 않으면 작성에 실패한다.")
-        void fail_not_found_session() {
+        void fail_not_found_session() throws Exception {
             // given
+            mockArgumentResolverFail();
+
             final String title = "title1";
             final String content = "content1";
             final BoardWriteRequest request = new BoardWriteRequest(title, content);
@@ -96,8 +104,11 @@ class BoardApiControllerTest extends AcceptanceTest {
 
         @Test
         @DisplayName("게시글 작성에 성공한다.")
-        void success() {
+        void success() throws Exception {
             // given
+            mockArgumentResolverSuccess(LOGIN_ID);
+            mockFindMemberOpenFeignSuccess(LOGIN_ID);
+
             final String title = "title1";
             final String content = "content1";
             final BoardWriteRequest request = new BoardWriteRequest(title, content);
@@ -114,12 +125,15 @@ class BoardApiControllerTest extends AcceptanceTest {
 
         @Test
         @DisplayName("로그인 ID에 해당하는 멤버가 존재하지 않으면 게시글 작성에 실패한다.")
-        void fail_not_found_login_id_member() {
+        void fail_not_found_login_id_member() throws Exception {
             // given
+            final String notExistLoginId = "notExistLoginId";
+            mockArgumentResolverSuccess(notExistLoginId);
+            mockFindMemberOpenFeignFail(notExistLoginId);
+
             final String title = "title1";
             final String content = "content1";
             final BoardWriteRequest request = new BoardWriteRequest(title, content);
-            memberRepository.deleteAll();
 
             // when
             final ExtractableResponse<Response> response = writeBoardRequest(request, sessionId);
@@ -138,51 +152,6 @@ class BoardApiControllerTest extends AcceptanceTest {
 
         private final int pageSize = 2;
         private final int totalPostCount = 7;
-        private final String loginId = "sh111";
-        private final String password = "password1!";
-        private final String nickname = "성하";
-
-        @BeforeEach
-        void setUp() {
-            registerRequest(new MemberRegisterRequest(loginId, password, nickname));
-            final ExtractableResponse<Response> response =
-                    loginRequest(new MemberLoginRequest(loginId, password));
-            sessionId = response.cookie("JSESSIONID");
-        }
-
-        @Test
-        @DisplayName("쿠키에 세션이 존재하지 않으면 조회에 실패한다.")
-        void fail_not_exist_session_in_cookie() {
-            // given
-            final int pageToRead = 1;
-
-            // when
-            final ExtractableResponse<Response> response = readByPageNotExistSessionRequest(pageToRead, pageSize);
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-                softly.assertThat(response.body().asString()).contains("인증되지 않은 사용자의 접근입니다.");
-            });
-        }
-
-        @Test
-        @DisplayName("쿠키에 해당하는 세션이 존재하지 않으면 조회에 실패한다.")
-        void fail_not_found_session() {
-            // given
-            final int pageToRead = 1;
-            final String notExistSessionId = "notExistSessionId";
-            final String encodedNotExistSessionId = new String(Base64.getEncoder().encode(notExistSessionId.getBytes()));
-
-            // when
-            final ExtractableResponse<Response> response = readByPageRequest(pageToRead, pageSize, encodedNotExistSessionId);
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-                softly.assertThat(response.body().asString()).contains("인증되지 않은 사용자의 접근입니다.");
-            });
-        }
 
         @Test
         @DisplayName("게시글이 존재하지 않을 시 조회에 성공한다.")
@@ -193,6 +162,7 @@ class BoardApiControllerTest extends AcceptanceTest {
             final int expectedCurrentPageNumber = 1;
 
             // when
+            sessionId = new String(Base64.getEncoder().encode(LOGIN_ID.getBytes(StandardCharsets.UTF_8)));
             final ExtractableResponse<Response> response = readByPageRequest(pageToRead, pageSize, sessionId);
             final BoardsResponse boardsResponse = response.as(BoardsResponse.class);
             final List<BoardListResponse> boardListResponses = boardsResponse.boardListResponses();
@@ -212,13 +182,14 @@ class BoardApiControllerTest extends AcceptanceTest {
         @DisplayName("게시글이 존재할 때 조회에 성공한다.")
         void success_exist_post(final int pageToRead) {
             // given
-            final Member member = memberRepository.findByLoginIdAndPassword(loginId, password).get();
+            final MemberInfo memberInfo = new MemberInfo(NICKNAME);
+            final MemberInfo savedMemberInfo = memberInfoRepository.save(memberInfo);
             for (int i = 1; i <= totalPostCount; i++) {
-                final Board board = new Board(member, "title" + i, "content" + i);
+                final Board board = new Board(savedMemberInfo, "title" + i, "content" + i);
                 boardRepository.save(board);
             }
 
-            int expectedTotalPageNumber = 0;
+            int expectedTotalPageNumber;
             if (totalPostCount % pageSize == 0) {
                 expectedTotalPageNumber = totalPostCount / pageSize;
             } else {
@@ -226,7 +197,7 @@ class BoardApiControllerTest extends AcceptanceTest {
             }
 
             // when
-            System.out.println("sessionId = " + sessionId);
+            sessionId = new String(Base64.getEncoder().encode(LOGIN_ID.getBytes(StandardCharsets.UTF_8)));
             final ExtractableResponse<Response> response = readByPageRequest(pageToRead - 1, pageSize, sessionId);
             final BoardsResponse boardsResponse = response.as(BoardsResponse.class);
             final List<BoardListResponse> boardListResponses = boardsResponse.boardListResponses();
@@ -247,25 +218,17 @@ class BoardApiControllerTest extends AcceptanceTest {
     @DisplayName("게시글 상세 조회 시")
     class ReadDetail {
 
-        private final String loginId = "sh111";
-        private final String password = "password1!";
-        private final String nickname = "성하";
-
-        @BeforeEach
-        void setUp() {
-            registerRequest(new MemberRegisterRequest(loginId, password, nickname));
-            final ExtractableResponse<Response> response =
-                    loginRequest(new MemberLoginRequest(loginId, password));
-            sessionId = response.cookie("JSESSIONID");
-        }
-
         @Test
         @DisplayName("게시글 상세 조회에 성공한다.")
-        void success() {
+        void success() throws Exception {
             // given
+            mockArgumentResolverSuccess(LOGIN_ID);
+            mockFindMemberOpenFeignSuccess(LOGIN_ID);
+
             final String title = "title1";
             final String content = "content1";
             final BoardWriteRequest request = new BoardWriteRequest(title, content);
+            sessionId = new String(Base64.getEncoder().encode(LOGIN_ID.getBytes(StandardCharsets.UTF_8)));
             writeBoardRequest(request, sessionId);
             final long boardId = 1L;
 
@@ -278,37 +241,7 @@ class BoardApiControllerTest extends AcceptanceTest {
                 softly.assertThat(response.jsonPath().getLong("id")).isEqualTo(boardId);
                 softly.assertThat(response.jsonPath().getString("title")).isEqualTo(title);
                 softly.assertThat(response.jsonPath().getString("content")).isEqualTo(content);
-                softly.assertThat(response.jsonPath().getString("writerNickname")).isEqualTo(nickname);
-            });
-        }
-
-        @Test
-        @DisplayName("쿠키에 세션이 존재하지 않으면 작성에 실패한다.")
-        void fail_not_exist_session_in_cookie() {
-            // when
-            final ExtractableResponse<Response> response = readDetailNotExistSessionRequest(1L);
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-                softly.assertThat(response.body().asString()).contains("인증되지 않은 사용자의 접근입니다.");
-            });
-        }
-
-        @Test
-        @DisplayName("쿠키에 해당하는 세션이 존재하지 않으면 작성에 실패한다.")
-        void fail_not_found_session() {
-            // given
-            final String notExistSessionId = "notExistSessionId";
-            final String encodedNotExistSessionId = new String(Base64.getEncoder().encode(notExistSessionId.getBytes()));
-
-            // when
-            final ExtractableResponse<Response> response = readDetailRequest(1L, encodedNotExistSessionId);
-
-            // then
-            assertSoftly(softly -> {
-                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-                softly.assertThat(response.body().asString()).contains("인증되지 않은 사용자의 접근입니다.");
+                softly.assertThat(response.jsonPath().getString("writerNickname")).isEqualTo(NICKNAME);
             });
         }
 
@@ -319,8 +252,7 @@ class BoardApiControllerTest extends AcceptanceTest {
             final String title = "title1";
             final String content = "content1";
             final BoardWriteRequest request = new BoardWriteRequest(title, content);
-            System.out.println("sessionId = " + sessionId);
-
+            sessionId = new String(Base64.getEncoder().encode(LOGIN_ID.getBytes(StandardCharsets.UTF_8)));
             writeBoardRequest(request, sessionId);
             final long notExistBoardId = -1L;
 
@@ -335,30 +267,55 @@ class BoardApiControllerTest extends AcceptanceTest {
         }
     }
 
-    private ExtractableResponse<Response> registerRequest(final MemberRegisterRequest request) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when().log().all()
-                .post("/api/members/register")
-                .then().log().all()
-                .extract();
+    private void mockFindMemberOpenFeignSuccess(final String loginId) throws JsonProcessingException {
+        final String expectedResponse = objectMapper.writeValueAsString(
+                Map.of(
+                        "memberId", 1,
+                        "nickname", "성하"
+                )
+        );
+
+        stubFor(get(urlEqualTo("/api/members?loginId=" + loginId))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(expectedResponse))
+        );
     }
 
-    private ExtractableResponse<Response> loginRequest(final MemberLoginRequest request) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(request)
-                .when().log().all()
-                .post("/api/members/login")
-                .then().log().all()
-                .extract();
+    private void mockFindMemberOpenFeignFail(final String notExistLoginId) throws JsonProcessingException {
+        final String expectedResponse = objectMapper.writeValueAsString(
+                Map.of(
+                        "errorMessage", "해당 멤버의 ID가 존재하지 않습니다."
+                )
+        );
+
+        stubFor(get(urlEqualTo("/api/members?loginId=" + notExistLoginId))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.NOT_FOUND.value())
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(expectedResponse))
+        );
+    }
+
+    private void mockArgumentResolverFail() throws Exception {
+        given(authMemberArgumentResolver.supportsParameter(any()))
+                .willReturn(true);
+        given(authMemberArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .willThrow(new AuthException.FailAuthenticationMemberException());
+    }
+
+    private void mockArgumentResolverSuccess(final String memberId) throws Exception {
+        given(authMemberArgumentResolver.supportsParameter(any()))
+                .willReturn(true);
+        given(authMemberArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .willReturn(new AuthMemberId(memberId));
     }
 
     private ExtractableResponse<Response> writeBoardRequest(final BoardWriteRequest request, final String sessionId) {
         return RestAssured.given().log().all()
                 .body(request)
-                .contentType(ContentType.JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .cookie("JSESSIONID", sessionId)
                 .when().log().all()
                 .post("/api/boards")
@@ -368,6 +325,7 @@ class BoardApiControllerTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> writeBoardNotExistSessionRequest(final BoardWriteRequest request) {
         return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .when().log().all()
                 .post("/api/boards")

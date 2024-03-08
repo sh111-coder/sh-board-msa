@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public abstract class AcceptanceTest {
+public abstract class AcceptanceTest extends OpenFeignClientTest {
 
     @Autowired
     private H2TruncateUtils truncateUtils;

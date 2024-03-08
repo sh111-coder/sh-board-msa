@@ -1,6 +1,7 @@
 package com.example.boardservice.board.exception;
 
 import com.example.shboardcommon.global.exception.ErrorResponse;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.circuitbreaker.NoFallbackAvailableException;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class BoardExceptionHandler {
 
     @ExceptionHandler(value = {
-            BoardException.NotFoundBoardException.class
+            BoardException.NotFoundBoardException.class,
+            FeignException.NotFound.class
     })
     public ResponseEntity<ErrorResponse> handleCustomNotFoundException(final RuntimeException exception) {
         final String errorMessage = exception.getMessage();
