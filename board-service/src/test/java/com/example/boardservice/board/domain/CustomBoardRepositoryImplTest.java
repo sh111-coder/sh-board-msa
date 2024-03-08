@@ -6,8 +6,6 @@ import java.util.List;
 
 import com.example.boardservice.board.domain.dto.BoardSearchCondition;
 import com.example.common.RepositoryTest;
-import com.example.memberservice.member.domain.Member;
-import com.example.memberservice.member.domain.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,7 +24,7 @@ class CustomBoardRepositoryImplTest extends RepositoryTest {
     private BoardRepository boardRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberInfoRepository memberInfoRepository;
 
     @Value("${spring.data.web.pageable.default-page-size}")
     private int defaultPageSize;
@@ -41,18 +39,14 @@ class CustomBoardRepositoryImplTest extends RepositoryTest {
         @BeforeEach
         void setUp() {
             for (int i = 1 ; i <= memberCount; i++) {
-                final Member member = Member.builder()
-                        .loginId("sh111")
-                        .password("password1!")
-                        .nickname("성하" + i)
-                        .build();
-                memberRepository.save(member);
+                final MemberInfo memberInfo = new MemberInfo("성하" + i);
+                memberInfoRepository.save(memberInfo);
             }
 
             for (int i = 1; i <= totalPostCount; i++) {
-                Member writer = memberRepository.findById((long) ((i % memberCount) + 1)).get();
+                MemberInfo memberInfo = memberInfoRepository.findById((long) ((i % memberCount) + 1)).get();
 
-                final Board board = new Board(writer, "title" + i, "content" + i);
+                final Board board = new Board(memberInfo, "title" + i, "content" + i);
                 boardRepository.save(board);
             }
         }
