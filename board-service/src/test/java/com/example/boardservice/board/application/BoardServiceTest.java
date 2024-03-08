@@ -26,12 +26,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-@AutoConfigureWireMock(port = 0)
 class BoardServiceTest extends ServiceTest {
 
     @Autowired
