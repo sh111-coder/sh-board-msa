@@ -16,6 +16,7 @@ dependencies {
     implementation 'it.ozimov:embedded-redis:0.7.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.session:spring-session-data-redis'
+    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
 
     // testFixture 필요 의존성 추가
     testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
