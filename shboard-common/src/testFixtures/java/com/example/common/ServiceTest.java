@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
-public abstract class ServiceTest {
+public abstract class ServiceTest extends OpenFeignClientTest {
 
     @Autowired
     private H2TruncateUtils truncateUtils;

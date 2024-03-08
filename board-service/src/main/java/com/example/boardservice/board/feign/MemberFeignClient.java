@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "member-service", path = "/api/members", fallback = MemberFeignFallback.class)
+@FeignClient(name = "member-service", url = "${member.find.feign-endpoint}", path = "/api/members", fallback = MemberFeignFallback.class)
 @CircuitBreaker(name = "circuit")
 public interface MemberFeignClient {
 
