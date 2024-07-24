@@ -22,6 +22,13 @@ MSA로 전환하면서 전반적인 Spring Cloud 환경을 구성하여 Spring C
 
 <br>
 
+## 🖥️ 전체 MSA Flow
+<img width="1309" alt="스크린샷 2024-07-24 오전 11 50 59" src="https://github.com/user-attachments/assets/e80ab1c1-5e49-4c3c-9a88-38f2f2caf81c">
+
+<br>
+<br>
+
+
 ## 🛠️사용한 기술 스택
 ```
 * JAVA & Spring
@@ -49,10 +56,11 @@ MSA로 전환하면서 전반적인 Spring Cloud 환경을 구성하여 Spring C
 ```
 
 
+
 <br>
 
 
-## 🌈️상세 코드 설명 - 블로그 참고
+## 🌈️ 상세 코드 설명 - 블로그 참고
 기존의 모놀리식 구조의 애플리케이션을 MSA로 전환하는 과정들을 챕터별로 블로그에 기록했습니다.
 <br>
 Spring Cloud 환경의 MSA 구조가 궁금하신 분들이나 구현 코드가 궁금하신 분들은 
